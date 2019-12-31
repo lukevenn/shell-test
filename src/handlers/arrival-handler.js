@@ -6,7 +6,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
   const { body } = req;
   if (!body) {
     // this should never happen
-    return res.send(new httpErrors.BadRequest(errors.REQUEST_MISSING_BODY));
+    res.send(new httpErrors.BadRequest(errors.REQUEST_MISSING_BODY));
+    return;
   }
 
   const expectedKeys = ['captain', 'datetime', 'port', 'vessel'];
@@ -14,7 +15,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
   const validValueTypes = Object.values(body).every((val) => typeof val === 'string' && val.length > 0);
 
   if (!validKeys || !validValueTypes) {
-    return res.send(new httpErrors.BadRequest(errors.REQUEST_INVALID_BODY));
+    res.send(new httpErrors.BadRequest(errors.REQUEST_INVALID_BODY));
+    return;
   }
 
   const {
@@ -26,20 +28,25 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
 
   const convertedDateTime = moment(datetime, 'Do of MMM YYYY');
   if (!convertedDateTime.isValid()) {
-    return res.send(new httpErrors.BadRequest(errors.REQUEST_INVALID_DATETIME));
+    res.send(new httpErrors.BadRequest(errors.REQUEST_INVALID_DATETIME));
+    return;
   }
 
   dynamoDbClient.put({
     TableName: process.env.TABLE_NAME,
     Item: {
-      CAPTAIN: captain,
-      DATETIME: convertedDateTime.valueOf(),
-      PORT: port,
-      VESSEL: vessel,
+      captain,
+      datetime: convertedDateTime.valueOf(),
+      port,
+      vessel,
     },
+  }, (error) => {
+    if (error) {
+      res.send(new httpErrors.BadRequest(errors.DB_PUT_FAIL));
+      return;
+    }
+    res.sendStatus(200);
   });
-
-  return res.sendStatus(200);
 };
 
 module.exports = {
