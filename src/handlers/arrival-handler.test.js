@@ -1,5 +1,10 @@
 const httpErrors = require('http-errors');
-const { errors } = require('../constants');
+const {
+  REQUEST_MISSING_BODY,
+  REQUEST_INVALID_BODY,
+  REQUEST_INVALID_DATETIME,
+  DB_PUT_FAIL,
+} = require('../constants');
 const { getArrivalHandler } = require('./arrival-handler');
 
 describe('arrivalHandler', () => {
@@ -19,7 +24,7 @@ describe('arrivalHandler', () => {
     };
 
     validBody = {
-      captain: 'bob',
+      captain: 'Boat Captain',
       vessel: 'boaty',
       port: 'newport',
       datetime: '5th of Feb 2056',
@@ -40,7 +45,7 @@ describe('arrivalHandler', () => {
     arrivalHandler({}, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.REQUEST_MISSING_BODY);
+    expect(error.message).toBe(REQUEST_MISSING_BODY);
   });
 
   it('should send a BadRequest error when the body is missing keys', () => {
@@ -53,7 +58,7 @@ describe('arrivalHandler', () => {
     arrivalHandler(mockRequest, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.REQUEST_INVALID_BODY);
+    expect(error.message).toBe(REQUEST_INVALID_BODY);
   });
 
   it('should send a BadRequest error when the body has extra keys', () => {
@@ -67,7 +72,7 @@ describe('arrivalHandler', () => {
     arrivalHandler(mockRequest, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.REQUEST_INVALID_BODY);
+    expect(error.message).toBe(REQUEST_INVALID_BODY);
   });
 
   it('should send a BadRequest error when the body has invalid data types', () => {
@@ -81,7 +86,7 @@ describe('arrivalHandler', () => {
     arrivalHandler(mockRequest, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.REQUEST_INVALID_BODY);
+    expect(error.message).toBe(REQUEST_INVALID_BODY);
   });
 
   it('should send a BadRequest error when an invalid date is passed', () => {
@@ -97,7 +102,7 @@ describe('arrivalHandler', () => {
     arrivalHandler(mockRequest, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.REQUEST_INVALID_DATETIME);
+    expect(error.message).toBe(REQUEST_INVALID_DATETIME);
   });
 
   it('should convert the date string to a number in the dymano params', () => {
@@ -110,6 +115,16 @@ describe('arrivalHandler', () => {
     expect(typeof params.Item.datetime).toBe('number');
   });
 
+  it('should create a normalised key for a captain', () => {
+    const mockRequest = {
+      body: validBody,
+    };
+    arrivalHandler(mockRequest, mockResponseObject);
+    const [params] = mockDynamoDbClient.put.mock.calls[0];
+    expect(mockDynamoDbClient.put).toHaveBeenCalled();
+    expect(params.Item.nameKey).toBe('boat+captain');
+  });
+
   it('should send a BadRequest error when the DB put fails', () => {
     mockDynamoDbClient.put.mockImplementationOnce((_, callback) => callback('error'));
     const mockRequest = {
@@ -118,6 +133,6 @@ describe('arrivalHandler', () => {
     arrivalHandler(mockRequest, mockResponseObject);
     const [error] = mockResponseObject.send.mock.calls[0];
     expect(error).toBeInstanceOf(httpErrors.BadRequest);
-    expect(error.message).toBe(errors.DB_PUT_FAIL);
+    expect(error.message).toBe(DB_PUT_FAIL);
   });
 });

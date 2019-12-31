@@ -9,4 +9,4 @@ const app = express();
 app.use(express.json());
 
 app.post('/arrival', getArrivalHandler(dynamoDbClient));
-app.get('/history/:name', () => {});
+app.get('/history/:nameKey', () => {});
