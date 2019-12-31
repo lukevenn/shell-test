@@ -4,6 +4,7 @@ const {
   DB_QUERY_FAIL,
   DB_NO_RESULTS,
 } = require('../constants');
+const { queryTrips } = require('../utils/db');
 
 const calculateTrips = (items) => (
   items
@@ -36,7 +37,7 @@ const getHistoryHandler = (dynamoDbClient) => (req, res) => {
     return;
   }
 
-  dynamoDbClient.query({}, (error, data = {}) => {
+  dynamoDbClient.query(queryTrips(nameKey), (error, data = {}) => {
     if (error) {
       res.send(new httpErrors.FailedDependency(DB_QUERY_FAIL));
       return;

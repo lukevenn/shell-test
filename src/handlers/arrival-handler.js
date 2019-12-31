@@ -6,6 +6,7 @@ const {
   REQUEST_INVALID_DATETIME,
   DB_PUT_FAIL,
 } = require('../constants');
+const { putArrival } = require('../utils/db');
 
 const getArrivalHandler = (dynamoDbClient) => (req, res) => {
   const { body } = req;
@@ -37,16 +38,12 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
     return;
   }
 
-  dynamoDbClient.put({
-    TableName: process.env.TABLE_NAME,
-    Item: {
-      nameKey: captain.replace(/\s/g, '+').toLowerCase(),
-      captain,
-      datetime: convertedDateTime.valueOf(),
-      port,
-      vessel,
-    },
-  }, (error) => {
+  dynamoDbClient.put(putArrival({
+    captain,
+    datetime: convertedDateTime.valueOf(),
+    port,
+    vessel,
+  }), (error) => {
     if (error) {
       res.send(new httpErrors.BadRequest(DB_PUT_FAIL));
       return;
