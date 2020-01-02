@@ -1,9 +1,9 @@
-## Deployment
+## Setup
 
-Install serverless globally
+Install all dependencies
 
 ```
-npm i -g serverless
+npm install
 ```
 
 Add your AWS credentials
@@ -13,8 +13,15 @@ export AWS_ACCESS_KEY_ID=<your-key-here>
 export AWS_SECRET_ACCESS_KEY=<your-secret-key-here>
 ```
 
-Run the serverless deployment
+## Running locally
 
 ```
-sls deploy
+npm run start:local
+```
+
+## Deploy to AWS
+Run the serverless deployment script
+
+```
+npm run deploy
 ```
