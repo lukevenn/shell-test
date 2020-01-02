@@ -37,9 +37,12 @@ const getHistoryHandler = (dynamoDbClient) => (req, res) => {
     return;
   }
 
-  dynamoDbClient.query(queryTrips(nameKey), (error, data = {}) => {
+  const params = queryTrips(nameKey);
+
+  dynamoDbClient.query(params, (error, data = {}) => {
     if (error) {
       res.send(new httpErrors.FailedDependency(DB_QUERY_FAIL));
+      console.log(error); // eslint-disable-line no-console
       return;
     }
     const { Items: items } = data;

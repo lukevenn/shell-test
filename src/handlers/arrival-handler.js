@@ -38,14 +38,17 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
     return;
   }
 
-  dynamoDbClient.put(putArrival({
+  const params = putArrival({
     captain,
     datetime: convertedDateTime.valueOf(),
     port,
     vessel,
-  }), (error) => {
+  });
+
+  dynamoDbClient.put(params, (error) => {
     if (error) {
       res.send(new httpErrors.BadRequest(DB_PUT_FAIL));
+      console.log(error); // eslint-disable-line no-console
       return;
     }
     res.sendStatus(200);

@@ -1,4 +1,4 @@
-const TableName = process.env.TABLE_NAME;
+const TableName = process.env.ARRIVALS_TABLE;
 
 const putArrival = ({
   captain,

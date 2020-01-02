@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
 describe('db', () => {
-  const TABLE_NAME = 'test-table';
+  const ARRIVALS_TABLE = 'test-table';
   const originalEnv = process.env;
   beforeEach(() => {
     jest.resetModules();
     process.env = {
       ...originalEnv,
-      TABLE_NAME,
+      ARRIVALS_TABLE,
     };
   });
 
@@ -25,7 +25,7 @@ describe('db', () => {
       };
 
       expect(putArrival(params)).toEqual({
-        TableName: TABLE_NAME,
+        TableName: ARRIVALS_TABLE,
         Item: {
           ...params,
           nameKey: 'boat+captain',
@@ -39,7 +39,7 @@ describe('db', () => {
       const { queryTrips } = require('./db');
       const nameKey = 'boat+captain';
       expect(queryTrips(nameKey)).toEqual({
-        TableName: TABLE_NAME,
+        TableName: ARRIVALS_TABLE,
         ExpressionAttributeValues: {
           ':nk': nameKey,
         },
