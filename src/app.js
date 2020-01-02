@@ -7,7 +7,6 @@ const createApp = (dynamoDbClient) => {
 
   app.use(express.json());
 
-  app.all('/', (req, res) => res.send('hello world'));
   app.post('/arrival', getArrivalHandler(dynamoDbClient));
   app.get('/history/:nameKey', getHistoryHandler(dynamoDbClient));
 
