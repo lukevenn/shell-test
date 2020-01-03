@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "60e6db60-efe5-4996-a679-156dbd305185",
+		"name": "Shell-test",
+		"description": "Endpoints for Shell test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "History request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://9uaekl5751.execute-api.eu-west-2.amazonaws.com/dev/history/bob+captain",
+					"protocol": "https",
+					"host": [
+						"9uaekl5751",
+						"execute-api",
+						"eu-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"history",
+						"bob+captain"
+					]
+				},
+				"description": "Get the completed trips"
+			},
+			"response": []
+		},
+		{
+			"name": "Arrival request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"captain\":\"Bob Captain\",\"vessel\":\"boaty\",\"datetime\":\"4th of Sep 2049\",\"port\":\"southampton\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://9uaekl5751.execute-api.eu-west-2.amazonaws.com/dev/arrival",
+					"protocol": "https",
+					"host": [
+						"9uaekl5751",
+						"execute-api",
+						"eu-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"arrival"
+					]
+				},
+				"description": "Add new arrival"
+			},
+			"response": []
+		},
+		{
+			"name": "Arrival request - invalid body",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"captain\":\"Bob Captain\",\"vessel\":\"boaty\",\"datetime\":\"4th of Sep 2048\",\"port\":\"potyyyyy\",\"poo\":\"POO\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://9uaekl5751.execute-api.eu-west-2.amazonaws.com/dev/arrival",
+					"protocol": "https",
+					"host": [
+						"9uaekl5751",
+						"execute-api",
+						"eu-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"arrival"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Arrival request - invalid datetime",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"captain\":\"Bob Captain\",\"vessel\":\"boaty\",\"datetime\":\"4th of blah 2048\",\"port\":\"potyyyyy\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://9uaekl5751.execute-api.eu-west-2.amazonaws.com/dev/arrival",
+					"protocol": "https",
+					"host": [
+						"9uaekl5751",
+						"execute-api",
+						"eu-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"arrival"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "History request - no results",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://9uaekl5751.execute-api.eu-west-2.amazonaws.com/dev/history/bob",
+					"protocol": "https",
+					"host": [
+						"9uaekl5751",
+						"execute-api",
+						"eu-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"history",
+						"bob"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
