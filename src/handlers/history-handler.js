@@ -33,7 +33,8 @@ const createResponseBody = (items) => {
 const getHistoryHandler = (dynamoDbClient) => (req, res) => {
   const { nameKey } = req.params;
   if (!nameKey) {
-    res.send(new httpErrors.BadRequest(REQUEST_INVALID_NAME));
+    const httpError = new httpErrors.BadRequest(REQUEST_INVALID_NAME);
+    res.status(httpError.status).send(httpError);
     return;
   }
 
@@ -41,14 +42,16 @@ const getHistoryHandler = (dynamoDbClient) => (req, res) => {
 
   dynamoDbClient.query(params, (error, data = {}) => {
     if (error) {
-      res.send(new httpErrors.FailedDependency(DB_QUERY_FAIL));
+      const httpError = new httpErrors.FailedDependency(DB_QUERY_FAIL);
+      res.status(httpError.status).send(httpError);
       console.log(error); // eslint-disable-line no-console
       return;
     }
     const { Items: items } = data;
 
     if (!items || !items.length) {
-      res.send(new httpErrors.NotFound(DB_NO_RESULTS));
+      const httpError = new httpErrors.NotFound(DB_NO_RESULTS);
+      res.status(httpError.status).send(httpError);
       return;
     }
     const responseBody = createResponseBody(items);

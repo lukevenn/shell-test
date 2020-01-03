@@ -19,8 +19,9 @@ describe('arrivalHandler', () => {
     };
 
     mockResponseObject = {
-      send: jest.fn(),
-      sendStatus: jest.fn(),
+      status: jest.fn(() => mockResponseObject),
+      send: jest.fn(() => mockResponseObject),
+      sendStatus: jest.fn(() => mockResponseObject),
     };
 
     validBody = {

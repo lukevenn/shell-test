@@ -19,8 +19,9 @@ describe('historyHandler', () => {
     };
 
     mockResponseObject = {
-      send: jest.fn(),
-      sendStatus: jest.fn(),
+      status: jest.fn(() => mockResponseObject),
+      send: jest.fn(() => mockResponseObject),
+      json: jest.fn(() => mockResponseObject),
     };
 
     historyHandler = getHistoryHandler(mockDynamoDbClient);
@@ -59,6 +60,39 @@ describe('historyHandler', () => {
     expect(error).toBeInstanceOf(httpErrors.NotFound);
     expect(error.message).toBe(DB_NO_RESULTS);
   });
+
+  it('should return the result as JSON', () => {
+    const nameKey = 'boat+captain';
+    const captain = 'Boat Captain';
+    const vessel = 'My Boat';
+    const baseData = {
+      nameKey,
+      captain,
+      vessel,
+    };
+
+    const testItems = [
+      {
+        ...baseData,
+        port: 'a',
+        datetime: 1,
+      },
+      {
+        ...baseData,
+        port: 'b',
+        datetime: 2,
+      },
+    ];
+
+    mockDynamoDbClient.query.mockImplementationOnce((_, callback) => (
+      callback(undefined, { Items: testItems })
+    ));
+    const mockRequest = { params: { nameKey: 'boat+captain' } };
+
+    historyHandler(mockRequest, mockResponseObject);
+
+    expect(mockResponseObject.json).toHaveBeenCalled();
+  });
 });
 
 describe('createResponseBody', () => {
@@ -71,49 +105,32 @@ describe('createResponseBody', () => {
     vessel,
   };
 
+  const testArrivals = [
+    {
+      ...baseData,
+      port: 'a',
+      datetime: 1,
+    },
+    {
+      ...baseData,
+      port: 'c',
+      datetime: 3,
+    },
+    {
+      ...baseData,
+      port: 'b',
+      datetime: 2,
+    },
+  ];
   it('should return the expected format of data', () => {
-    const testData = [
-      {
-        ...baseData,
-        port: 'a',
-        datetime: 1,
-      },
-      {
-        ...baseData,
-        port: 'c',
-        datetime: 3,
-      },
-      {
-        ...baseData,
-        port: 'b',
-        datetime: 2,
-      },
-    ];
-    const responseBody = createResponseBody(testData);
+    const responseBody = createResponseBody(testArrivals);
     expect(normaliseKeys(Object.keys(responseBody))).toEqual(normaliseKeys(['captainName', 'trips']));
     expect(typeof responseBody.captainName).toBe('string');
     expect(Array.isArray(responseBody.trips)).toBe(true);
   });
 
   it('should return the trips in the expected order and format', () => {
-    const testData = [
-      {
-        ...baseData,
-        port: 'a',
-        datetime: 1,
-      },
-      {
-        ...baseData,
-        port: 'c',
-        datetime: 3,
-      },
-      {
-        ...baseData,
-        port: 'b',
-        datetime: 2,
-      },
-    ];
-    const { trips } = createResponseBody(testData);
+    const { trips } = createResponseBody(testArrivals);
     expect(trips).toHaveLength(2);
     expect(trips[0]).toEqual({
       vessel,

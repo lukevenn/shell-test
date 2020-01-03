@@ -12,7 +12,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
   const { body } = req;
   if (!body) {
     // this should never happen
-    res.send(new httpErrors.BadRequest(REQUEST_MISSING_BODY));
+    const httpError = new httpErrors.BadRequest(REQUEST_MISSING_BODY);
+    res.status(httpError.status).send(httpError);
     return;
   }
 
@@ -21,7 +22,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
   const validValueTypes = Object.values(body).every((val) => typeof val === 'string' && val.length > 0);
 
   if (!validKeys || !validValueTypes) {
-    res.send(new httpErrors.BadRequest(REQUEST_INVALID_BODY));
+    const httpError = new httpErrors.BadRequest(REQUEST_INVALID_BODY);
+    res.status(httpError.status).send(httpError);
     return;
   }
 
@@ -34,7 +36,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
 
   const convertedDateTime = moment(datetime, 'Do of MMM YYYY');
   if (!convertedDateTime.isValid()) {
-    res.send(new httpErrors.BadRequest(REQUEST_INVALID_DATETIME));
+    const httpError = new httpErrors.BadRequest(REQUEST_INVALID_DATETIME);
+    res.status(httpError.status).send(httpError);
     return;
   }
 
@@ -47,7 +50,8 @@ const getArrivalHandler = (dynamoDbClient) => (req, res) => {
 
   dynamoDbClient.put(params, (error) => {
     if (error) {
-      res.send(new httpErrors.BadRequest(DB_PUT_FAIL));
+      const httpError = new httpErrors.BadRequest(DB_PUT_FAIL);
+      res.status(httpError.status).send(httpError);
       console.log(error); // eslint-disable-line no-console
       return;
     }
